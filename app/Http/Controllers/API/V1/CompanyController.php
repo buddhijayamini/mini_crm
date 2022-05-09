@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Response;
 use App\Http\Requests\CompanyRequest;
 use Exception;
+use Illuminate\Support\Facades\Mail;
 
 class CompanyController extends ApiController
 {
@@ -64,12 +65,21 @@ class CompanyController extends ApiController
     try{
             $validatedData = $request->validated();
 
+            $timestamp = time();
+            $file = $request->file('logo');
+            if($file){
+                $name = $request->name;
+                $filename = $name.'-' .$timestamp .'-LOGO-'. $file->getClientOriginalName();
+                $path = $file->storeAs('public',$filename);
+                $validatedData['logo']=json_encode($path);
+            }
         return response()->json(
             [
                 'data' => $this->companyRepository->createCompany($validatedData)
             ],
             Response::HTTP_CREATED
         );
+        Mail::to($request->email)->send($validatedData);
       }catch(Exception $e){
         return $this->errorResponse(500,'Error save resource--' .$e);
       }
@@ -130,6 +140,13 @@ class CompanyController extends ApiController
      try{
         $compId = $request->route('id');
         $compDetails = $request1->validated();
+
+        $timestamp = time();
+        $file = $request->file('logo');
+        $name = $request->name;
+        $filename = $name.'-' .$timestamp .'-LOGO-'. $file->getClientOriginalName();
+        $path = $file->storeAs('public',$filename);
+        $validatedData['logo']=json_encode($path);
 
         return response()->json([
             'data' => $this->companyRepository->updateCompany($compId, $compDetails)

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Support\Facades\Mail;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,4 +15,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('test-email', function () {
+
+    $user = [
+        'name' => 'Buddhini',
+        'info' => 'Email Test'
+    ];
+
+    Mail::to('buddhinigeethen@gmail.com')->send(new \App\Mail\CompanyMail($user));
+
+    dd("success");
+
 });

@@ -12,7 +12,7 @@ class CompanyRepository implements CompanyRepositoryInterface
 {
     public function getAllCompanies()
     {
-        return Company::all();
+        return Company::paginate(10);
     }
 
     public function getCompanyById($compId)
